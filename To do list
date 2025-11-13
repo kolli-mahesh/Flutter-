@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const ToDoApp());
+}
+
+class ToDoApp extends StatelessWidget {
+  const ToDoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To-Do List',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: const ToDoHomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class ToDoHomePage extends StatefulWidget {
+  const ToDoHomePage({super.key});
+
+  @override
+  State<ToDoHomePage> createState() => _ToDoHomePageState();
+}
+
+class _ToDoHomePageState extends State<ToDoHomePage> {
+  final List<String> _tasks = [];
+  final TextEditingController _controller = TextEditingController();
+
+  void _addTask() {
+    String text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      setState(() {
+        _tasks.add(text);
+      });
+      _controller.clear();
+    }
+  }
+
+  void _deleteTask(int index) {
+    setState(() {
+      _tasks.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('To-Do List'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter task',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: _addTask,
+                  child: const Text('Add'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: _tasks.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No tasks yet. Add one!',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _tasks.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          child: ListTile(
+                            title: Text(_tasks[index]),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteTask(index),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
